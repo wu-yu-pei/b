@@ -27,7 +27,7 @@ const connection = mysql.createConnection({
 });
 
 app.get("/books", (req, res) => {
-  connection.query("SELECT * FROM books", (err, result) => {
+  connection.query("SELECT * FROM books ORDER BY level DESC", (err, result) => {
     res.send({ code: 200, data: result })
     if (err) {
       res.send({ code: 500, data: err })
