@@ -26,15 +26,25 @@ const connection = mysql.createConnection({
   database: 'juejin'
 });
 
-app.get("/books", (req, res) => {
+app.get("/books", async (req, res) => {
   const ip = getClientIp(req)
+
+  // 拉黑处理
+  const isBlack = await execQuery("select ip from black_list where ip = ?", [ip])
+
+  if (isBlack.length) {
+    res.send({ code: 200, msg: "您已被禁用" })
+    return
+  }
 
   connection.query("SELECT * FROM books ORDER BY level DESC", async (err, result) => {
 
     res.send({ code: 200, data: result })
-    // 如果有 就不用插入数据库
+
+    // 来访记录
     connection.query("SELECT * FROM logs WHERE ip = ?", [ip], (err, result) => {
       if (result.length) {
+        // 如果有 就不用插入数据库
         return;
       } else {
         // 插入记录 发送通知
@@ -102,4 +112,17 @@ function getClientIp(req) {
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress ||
     '';
+}
+
+
+function execQuery(sql, params) {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, params, (err, result) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    })
+  })
 }
