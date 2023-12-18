@@ -45,25 +45,17 @@ app.post("/submit", (req, res) => {
     res.send({ code: 200, success: 200 })
 
     const receiverone = {
-      // 发件人 邮箱  '昵称<发件人邮箱>'
       from: `495174699@qq.com`,
-      // 主题
       subject: '通知',
-      // 收件人 的邮箱 可以是其他邮箱 不一定是qq邮箱
       to: '495174699@qq.com',
-      // 可以使用html标签
-      html: `ip:${ip},掘金小册bookId：${book_id},联系方式：${phone}，请尽快处理.`
+      html: `ip->${ip},掘金小册->${book_id},联系方式->${phone}，请尽快处理.`
     }
 
     const receivertwo = {
-      // 发件人 邮箱  '昵称<发件人邮箱>'
       from: `495174699@qq.com`,
-      // 主题
       subject: '通知',
-      // 收件人 的邮箱 可以是其他邮箱 不一定是qq邮箱
       to: '2456635159@qq.com',
-      // 可以使用html标签
-      html: `ip:${ip},掘金小册bookId：${book_id},联系方式：${phone}，请尽快处理.`
+      html: `ip->${ip},掘金小册->${book_id},联系方式->${phone}，请尽快处理.`
     }
 
     transporter.sendMail(receiverone, (error, info) => {
