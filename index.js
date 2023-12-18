@@ -28,6 +28,8 @@ const connection = mysql.createConnection({
 
 app.get("/books", (req, res) => {
   connection.query("SELECT * FROM books ORDER BY level DESC", (err, result) => {
+    const ip = getClientIp(req)
+    console.log('---', ip);
     res.send({ code: 200, data: result })
     if (err) {
       res.send({ code: 500, data: err })
@@ -37,7 +39,8 @@ app.get("/books", (req, res) => {
 
 app.post("/submit", (req, res) => {
   const { book_id, phone } = req.body
-  console.log('---');
+  const ip = getClientIp(req)
+  console.log('---', ip);
   connection.execute("INSERT INTO users (phone, book_id, create_date, update_date) VALUES (?, ?, ?, ?)", [phone, book_id, new Date(), new Date()], (err, result) => {
     res.send({ code: 200, success: 200 })
 
@@ -77,3 +80,12 @@ app.post("/submit", (req, res) => {
 app.listen(7899, () => {
   console.log('server is runing at 7899')
 })
+
+function getClientIp(req) {
+  return req.headers['x-forwarded-for'] ||
+    req.ip ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress ||
+    '';
+}
