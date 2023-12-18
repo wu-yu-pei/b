@@ -27,10 +27,32 @@ const connection = mysql.createConnection({
 });
 
 app.get("/books", (req, res) => {
-  connection.query("SELECT * FROM books ORDER BY level DESC", (err, result) => {
-    const ip = getClientIp(req)
-    console.log('post---', ip);
+  const ip = getClientIp(req)
+
+  connection.query("SELECT * FROM books ORDER BY level DESC", async (err, result) => {
+
     res.send({ code: 200, data: result })
+    // 如果有 就不用插入数据库
+    connection.query("SELECT * FROM logs WHERE ip = ?", [ip], (err, result) => {
+      if (result.length) {
+        return;
+      } else {
+        // 插入记录 发送通知
+        connection.execute("INSERT INTO logs (ip, create_date, update_date) VALUES (?, ?, ?)", [ip, new Date(), new Date()], (err, result) => {
+          const receiver = {
+            from: `495174699@qq.com`,
+            subject: '来访通知(可忽略)',
+            to: '495174699@qq.com',
+            html: `ip->${ip},来访`
+          }
+
+          transporter.sendMail(receiver, (error, info) => {
+            transporter.close()
+          })
+        })
+      }
+    })
+
     if (err) {
       res.send({ code: 500, data: err })
     }
@@ -46,14 +68,14 @@ app.post("/submit", (req, res) => {
 
     const receiverone = {
       from: `495174699@qq.com`,
-      subject: '通知',
+      subject: '购买通知',
       to: '495174699@qq.com',
       html: `ip->${ip},掘金小册->${book_id},联系方式->${phone}，请尽快处理.`
     }
 
     const receivertwo = {
       from: `495174699@qq.com`,
-      subject: '通知',
+      subject: '购买通知',
       to: '2456635159@qq.com',
       html: `ip->${ip},掘金小册->${book_id},联系方式->${phone}，请尽快处理.`
     }
