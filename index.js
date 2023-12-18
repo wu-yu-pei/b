@@ -29,7 +29,7 @@ const connection = mysql.createConnection({
 app.get("/books", (req, res) => {
   connection.query("SELECT * FROM books ORDER BY level DESC", (err, result) => {
     const ip = getClientIp(req)
-    console.log('---', ip);
+    console.log('post---', ip);
     res.send({ code: 200, data: result })
     if (err) {
       res.send({ code: 500, data: err })
@@ -40,7 +40,7 @@ app.get("/books", (req, res) => {
 app.post("/submit", (req, res) => {
   const { book_id, phone } = req.body
   const ip = getClientIp(req)
-  console.log('---', ip);
+  console.log('get---', ip);
   connection.execute("INSERT INTO users (phone, book_id, create_date, update_date) VALUES (?, ?, ?, ?)", [phone, book_id, new Date(), new Date()], (err, result) => {
     res.send({ code: 200, success: 200 })
 
@@ -52,7 +52,7 @@ app.post("/submit", (req, res) => {
       // 收件人 的邮箱 可以是其他邮箱 不一定是qq邮箱
       to: '495174699@qq.com',
       // 可以使用html标签
-      html: `掘金小册bookId：${book_id} 联系方式：${phone}，请尽快处理`
+      html: `ip:${ip},掘金小册bookId：${book_id},联系方式：${phone}，请尽快处理.`
     }
 
     const receivertwo = {
@@ -63,7 +63,7 @@ app.post("/submit", (req, res) => {
       // 收件人 的邮箱 可以是其他邮箱 不一定是qq邮箱
       to: '2456635159@qq.com',
       // 可以使用html标签
-      html: `掘金小册bookId：${book_id} 联系方式：${phone}，请尽快处理`
+      html: `ip:${ip},掘金小册bookId：${book_id},联系方式：${phone}，请尽快处理.`
     }
 
     transporter.sendMail(receiverone, (error, info) => {
