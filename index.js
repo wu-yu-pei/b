@@ -78,6 +78,9 @@ app.post("/submit", (req, res) => {
   connection.execute("INSERT INTO users (phone, book_id, create_date, update_date) VALUES (?, ?, ?, ?)", [phone, book_id, new Date(), new Date()], (err, result) => {
     res.send({ code: 200, success: 200 })
 
+    // update log user
+    connection.execute("UPDATE logs SET user = ? WHERE ip = ?", [phone, ip])
+
     const receiverone = {
       from: `495174699@qq.com`,
       subject: '购买通知',
