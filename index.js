@@ -44,7 +44,9 @@ app.get("/books", async (req, res) => {
     // 来访记录
     connection.query("SELECT * FROM logs WHERE ip = ?", [ip], (err, result) => {
       if (result.length) {
-        // 如果有 就不用插入数据库
+
+        // 如果有 更新次数
+        +new Date(result[0].update_date) < +new Date() - (1000 * 60 * 5) ? connection.execute("UPDATE logs SET count = ?, update_date = ? WHERE ip = ?", [result[0].count + 1, new Date(), ip]) : ""
         return;
       } else {
         // 插入记录 发送通知
