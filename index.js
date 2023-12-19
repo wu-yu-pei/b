@@ -37,7 +37,7 @@ app.get("/books", async (req, res) => {
     return
   }
 
-  connection.query("SELECT * FROM books ORDER BY level DESC", async (err, result) => {
+  connection.query("SELECT * FROM books where status = 1 ORDER BY level DESC", async (err, result) => {
 
     res.send({ code: 200, data: result })
 
@@ -69,6 +69,13 @@ app.get("/books", async (req, res) => {
       res.send({ code: 500, data: err })
     }
   })
+})
+
+app.get("/leave", (req, res) => {
+  const { time = 0 } = req.query
+  const ip = getClientIp(req)
+  connection.execute("UPDATE logs SET time = ? WHERE ip = ?", [time + 's', ip])
+  res.send({ code: 200, success: 'ok' })
 })
 
 app.post("/submit", (req, res) => {
