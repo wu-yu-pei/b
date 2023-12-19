@@ -59,7 +59,15 @@ app.get("/books", async (req, res) => {
             from: `495174699@qq.com`,
             subject: '来访通知(可忽略)',
             to: '495174699@qq.com',
-            html: `ip->${ip},来访,位置->prov:${prov} city:${city} district:${district} lat:${lat} lng:${lng}`
+            html: `
+            ip->${ip},来访!
+            位置:
+            prov:${prov}
+            city:${city}
+            district:${district}
+            lng&lat:${lng},${lat}
+            位置查询:http://jingweidu.757dy.com/
+            `
           }
 
           transporter.sendMail(receiver, (error, info) => {
