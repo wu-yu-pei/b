@@ -75,6 +75,7 @@ app.get("/leave", (req, res) => {
   const { time = 0 } = req.query
   const ip = getClientIp(req)
   connection.execute("UPDATE logs SET time = ? WHERE ip = ?", [time + 's', ip])
+  console.log(time)
   res.send({ code: 200, success: 'ok' })
 })
 
