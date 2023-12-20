@@ -84,7 +84,7 @@ app.get("/books", async (req, res) => {
 
 app.get("/leave", (req, res) => {
   const { time = 0 } = req.query
-  const ip = getClientIp(req)
+  const ip = toIpv4(getClientIp(req))
   connection.execute("UPDATE logs SET time = ? WHERE ip = ?", [time + 's', ip])
   console.log(time)
   res.send({ code: 200, success: 'ok' })
@@ -92,7 +92,7 @@ app.get("/leave", (req, res) => {
 
 app.post("/submit", (req, res) => {
   const { book_id, phone } = req.body
-  const ip = getClientIp(req)
+  const ip = toIpv4(getClientIp(req))
   console.log('get---', ip);
   connection.execute("INSERT INTO users (phone, book_id, create_date, update_date) VALUES (?, ?, ?, ?)", [phone, book_id, new Date(), new Date()], (err, result) => {
     res.send({ code: 200, success: 200 })
