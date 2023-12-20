@@ -28,8 +28,7 @@ const connection = mysql.createConnection({
 });
 
 app.get("/books", async (req, res) => {
-  const ip = getClientIp(req)
-
+  const ip = toIpv4(getClientIp(req))
   // 拉黑处理
   const isBlack = await execQuery("select ip from black_list where ip = ?", [ip])
 
@@ -51,7 +50,7 @@ app.get("/books", async (req, res) => {
       } else {
 
         // 位置信息
-        const { prov, city, district, lat, lng } = await getPosition(toIpv4(ip))
+        const { prov, city, district, lat, lng } = await getPosition(ip)
 
         // 插入记录 发送通知
         connection.execute("INSERT INTO logs (ip, create_date, update_date) VALUES (?, ?, ?)", [ip, new Date(), new Date()], (err, result) => {
@@ -157,6 +156,7 @@ function toIpv4(ip) {
   return ip.split(':').pop()
 }
 
+// https://chaipip.com/aiwen.html 站 加密算法
 var base = new Base64();
 
 function Base64() {
@@ -265,12 +265,12 @@ function getPosition(ip) {
       if (error) [
         reject(error)
       ]
-
       const result = stdout.match(/级别\r\n(.*)\r\n"(.*)"\.slice\((\d*)\);/)
       const str = result[2]
       const len = result[3]
       const __res = JSON.parse('' + base.decode(str.slice(len)));
       resolve(__res[0])
+      console.log(__res);
     })
   })
 }
