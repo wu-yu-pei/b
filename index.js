@@ -33,7 +33,7 @@ app.get("/books", async (req, res) => {
   const isBlack = await execQuery("select ip from black_list where ip = ?", [ip])
 
   if (isBlack.length) {
-    res.send({ code: 200, msg: "您已被禁用" })
+    res.send({ code: 401, msg: "您已被禁用" })
     return
   }
 
