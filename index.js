@@ -269,8 +269,8 @@ function getPosition(ip) {
       const str = result[2]
       const len = result[3]
       const __res = JSON.parse('' + base.decode(str.slice(len)));
+      console.log('->', __res, '<-');
       resolve(__res[0])
-      console.log(__res);
     })
   })
 }
