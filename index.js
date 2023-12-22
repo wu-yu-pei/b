@@ -1,8 +1,8 @@
 const express = require("express")
 const mysql = require('mysql2');
 const cors = require("cors")
-const nodemailer = require('nodemailer')
-const exec = require('child_process').exec
+const nodemailer = require('nodemailer');
+const { default: axios } = require("axios");
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.qq.com',
@@ -50,7 +50,7 @@ app.get("/books", async (req, res) => {
       } else {
 
         // 位置信息
-        const { prov, city, district, lat, lng } = await getPosition(ip)
+        const { data: { province, city } } = await getPosition(ip)
 
         // 插入记录 发送通知
         connection.execute("INSERT INTO logs (ip, create_date, update_date) VALUES (?, ?, ?)", [ip, new Date(), new Date()], (err, result) => {
@@ -60,12 +60,7 @@ app.get("/books", async (req, res) => {
             to: '495174699@qq.com',
             html: `
             ip->${ip},来访!
-            位置:
-            prov:${prov}
-            city:${city}
-            district:${district}
-            lng&lat:${lng},${lat}
-            位置查询:http://jingweidu.757dy.com/
+            位置:prov:${province},city:${city}
             `
           }
 
@@ -156,121 +151,7 @@ function toIpv4(ip) {
   return ip.split(':').pop()
 }
 
-// https://chaipip.com/aiwen.html 站 加密算法
-var base = new Base64();
-
-function Base64() {
-  _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  this.encode = function (c) {
-    var a = "";
-    var k, h, f, j, g, e, d;
-    var b = 0;
-    c = _utf8_encode(c);
-    while (b < c.length) {
-      k = c.charCodeAt(b++);
-      h = c.charCodeAt(b++);
-      f = c.charCodeAt(b++);
-      j = k >> 2;
-      g = ((k & 3) << 4) | (h >> 4);
-      e = ((h & 15) << 2) | (f >> 6);
-      d = f & 63;
-      if (isNaN(h)) {
-        e = d = 64;
-      } else {
-        if (isNaN(f)) {
-          d = 64;
-        }
-      }
-      a = a + _keyStr.charAt(j) + _keyStr.charAt(g) + _keyStr.charAt(e) + _keyStr.charAt(d);
-    }
-    return a;
-  };
-  this.decode = function (c) {
-    var a = "";
-    var k, h, f;
-    var j, g, e, d;
-    var b = 0;
-    c = c.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    while (b < c.length) {
-      j = _keyStr.indexOf(c.charAt(b++));
-      g = _keyStr.indexOf(c.charAt(b++));
-      e = _keyStr.indexOf(c.charAt(b++));
-      d = _keyStr.indexOf(c.charAt(b++));
-      k = (j << 2) | (g >> 4);
-      h = ((g & 15) << 4) | (e >> 2);
-      f = ((e & 3) << 6) | d;
-      a = a + String.fromCharCode(k);
-      if (e != 64) {
-        a = a + String.fromCharCode(h);
-      }
-      if (d != 64) {
-        a = a + String.fromCharCode(f);
-      }
-    }
-    a = _utf8_decode(a);
-    return a;
-  };
-}
-
-_utf8_encode = function (b) {
-  b = b.replace(/\r\n/g, "\n");
-  var a = "";
-  for (var e = 0; e < b.length; e++) {
-    var d = b.charCodeAt(e);
-    if (d < 128) {
-      a += String.fromCharCode(d);
-    } else {
-      if ((d > 127) && (d < 2048)) {
-        a += String.fromCharCode((d >> 6) | 192);
-        a += String.fromCharCode((d & 63) | 128);
-      } else {
-        a += String.fromCharCode((d >> 12) | 224);
-        a += String.fromCharCode(((d >> 6) & 63) | 128);
-        a += String.fromCharCode((d & 63) | 128);
-      }
-    }
-  }
-  return a;
-};
-
-_utf8_decode = function (a) {
-  var b = "";
-  var d = 0;
-  var e = c1 = c2 = 0;
-  while (d < a.length) {
-    e = a.charCodeAt(d);
-    if (e < 128) {
-      b += String.fromCharCode(e);
-      d++;
-    } else {
-      if ((e > 191) && (e < 224)) {
-        c2 = a.charCodeAt(d + 1);
-        b += String.fromCharCode(((e & 31) << 6) | (c2 & 63));
-        d += 2;
-      } else {
-        c2 = a.charCodeAt(d + 1);
-        c3 = a.charCodeAt(d + 2);
-        b += String.fromCharCode(((e & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-        d += 3;
-      }
-    }
-  }
-  return b;
-};
-
 function getPosition(ip) {
-  return new Promise((resolve, reject) => {
-    // 计算位置
-    exec(`curl -H "X-Forwarded-For:${ip}" https://chaipip.com/aiwen.html`, (error, stdout, stderr) => {
-      if (error) [
-        reject(error)
-      ]
-      const result = stdout.match(/级别\r\n(.*)\r\n"(.*)"\.slice\((\d*)\);/)
-      const str = result[2]
-      const len = result[3]
-      const __res = JSON.parse('' + base.decode(str.slice(len)));
-      console.log('->', __res, '<-');
-      resolve(__res[0])
-    })
-  })
+  console.log(`https://restapi.amap.com/v3/ip?ip=${ip}&output=json&key=abfe7ea197193f191952ddc71eae19cb`);
+  return axios.get(`https://restapi.amap.com/v3/ip?ip=${ip}&output=json&key=abfe7ea197193f191952ddc71eae19cb`)
 }
