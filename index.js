@@ -152,6 +152,5 @@ function toIpv4(ip) {
 }
 
 function getPosition(ip) {
-  console.log(`https://restapi.amap.com/v3/ip?ip=${ip}&output=json&key=abfe7ea197193f191952ddc71eae19cb`);
   return axios.get(`https://restapi.amap.com/v3/ip?ip=${ip}&output=json&key=abfe7ea197193f191952ddc71eae19cb`)
 }
