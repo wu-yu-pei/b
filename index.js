@@ -28,6 +28,7 @@ const connection = mysql.createConnection({
 });
 
 app.get("/books", async (req, res) => {
+  const device = req.headers["user-agent"]
   const ip = toIpv4(getClientIp(req))
   // 拉黑处理
   const isBlack = await execQuery("select ip from black_list where ip = ?", [ip])
@@ -60,6 +61,7 @@ app.get("/books", async (req, res) => {
             to: '495174699@qq.com',
             html: `
             ip->${ip},来访!
+            device->${device}
             位置:prov:${province},city:${city}
             `
           }
