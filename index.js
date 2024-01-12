@@ -4,6 +4,7 @@ const cors = require("cors")
 const nodemailer = require('nodemailer');
 const { default: axios } = require("axios");
 
+
 const transporter = nodemailer.createTransport({
   host: 'smtp.qq.com',
   port: 465,
@@ -19,6 +20,7 @@ app.use(cors())
 app.use(express.json({
   type: 'application/json'
 }))
+app.use(express.static('public'))
 
 const connection = mysql.createConnection({
   host: '192.210.232.179',
