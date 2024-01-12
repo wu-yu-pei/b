@@ -124,7 +124,7 @@ app.post("/submit", (req, res) => {
     const receivertwo = {
       from: `495174699@qq.com`,
       subject: '购买通知',
-      to: '2456635159@qq.com',
+      to: '1376522644@qq.com',
       html: `ip->${ip},掘金小册->${book_id},联系方式->${phone}，请尽快处理.`
     }
 
