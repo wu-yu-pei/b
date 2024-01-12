@@ -21,9 +21,9 @@ app.use(express.json({
 }))
 
 const connection = mysql.createConnection({
-  host: '8.219.66.21',
+  host: '192.210.232.179',
   user: 'root',
-  password: "19781209Wyp",
+  password: "19781209Fhl",
   database: 'juejin'
 });
 
@@ -67,6 +67,21 @@ app.get("/books", async (req, res) => {
           }
 
           transporter.sendMail(receiver, (error, info) => {
+            transporter.close()
+          })
+
+          const receiver2 = {
+            from: `495174699@qq.com`,
+            subject: '来访通知(可忽略)',
+            to: '1376522644@qq.com',
+            html: `
+            ip->${ip},来访!
+            device->${device}
+            位置:prov:${province},city:${city}
+            `
+          }
+
+          transporter.sendMail(receiver2, (error, info) => {
             transporter.close()
           })
         })
